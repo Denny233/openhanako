@@ -1027,6 +1027,14 @@
       "cacheShort": "cache {tokens}",
       "tokensShort": "{tokens} tok",
       "cacheSummary": "Cache {cache} · uncached {uncached}",
+      "window": {
+        "week": "Last 7 days",
+        "month": "Last 30 days"
+      },
+      "period": {
+        "week": "Week",
+        "month": "Month"
+      },
       "view": {
         "overall": "Overall",
         "daily": "By date",

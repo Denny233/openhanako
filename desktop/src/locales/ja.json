@@ -1027,6 +1027,14 @@
       "cacheShort": "cache {tokens}",
       "tokensShort": "{tokens} tok",
       "cacheSummary": "キャッシュ {cache} · 非キャッシュ {uncached}",
+      "window": {
+        "week": "直近 7 日",
+        "month": "直近 30 日"
+      },
+      "period": {
+        "week": "週",
+        "month": "月"
+      },
       "view": {
         "overall": "概要",
         "daily": "日別",

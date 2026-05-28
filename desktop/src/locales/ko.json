@@ -1027,6 +1027,14 @@
       "cacheShort": "cache {tokens}",
       "tokensShort": "{tokens} tok",
       "cacheSummary": "캐시 {cache} · 비캐시 {uncached}",
+      "window": {
+        "week": "최근 7일",
+        "month": "최근 30일"
+      },
+      "period": {
+        "week": "주",
+        "month": "월"
+      },
       "view": {
         "overall": "전체",
         "daily": "날짜별",
