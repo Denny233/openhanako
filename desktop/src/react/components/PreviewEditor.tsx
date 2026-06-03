@@ -494,7 +494,7 @@ export const PreviewEditor = forwardRef<PreviewEditorHandle, PreviewEditorProps>
       const isCsv = mode === 'csv';
 
       const extensions = [
-        drawSelection(),
+        ...(isMd ? [] : [drawSelection()]),
         history(),
         bracketMatching(),
         keymap.of([...defaultKeymap, ...historyKeymap]),

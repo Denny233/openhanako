@@ -93,6 +93,37 @@ describe('PreviewEditor file sync', () => {
     expect(platform.writeFile).not.toHaveBeenCalled();
   });
 
+  it('uses native selection in markdown while keeping CodeMirror selection drawing for code', () => {
+    const markdownRef = createRef<PreviewEditorHandle>();
+    const { container: markdownContainer, unmount: unmountMarkdown } = render(
+      <PreviewEditor
+        ref={markdownRef}
+        content="alpha\nbeta"
+        filePath="/tmp/hana-note.md"
+        mode="markdown"
+      />,
+    );
+
+    expect(markdownRef.current?.getView()).toBeTruthy();
+    expect(markdownContainer.querySelector('.cm-selectionLayer')).toBeNull();
+
+    unmountMarkdown();
+
+    const codeRef = createRef<PreviewEditorHandle>();
+    const { container: codeContainer } = render(
+      <PreviewEditor
+        ref={codeRef}
+        content="const value = 1;"
+        filePath="/tmp/demo.ts"
+        mode="code"
+        language="typescript"
+      />,
+    );
+
+    expect(codeRef.current?.getView()).toBeTruthy();
+    expect(codeContainer.querySelector('.cm-selectionLayer')).toBeTruthy();
+  });
+
   it('saves user edits with the file version that was last loaded from disk', async () => {
     const ref = createRef<PreviewEditorHandle>();
     const fileVersion = { mtimeMs: 1, size: 8, sha256: 'loaded' };
