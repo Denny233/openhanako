@@ -2,6 +2,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.14rem;
+  box-sizing: border-box;
   padding: 0.06rem 0.24rem;
   font-size: 0.78rem;
   font-weight: 500;
@@ -14,7 +15,8 @@
   vertical-align: middle;
   user-select: none;
   margin: 0 0.12rem;
-  max-width: min(15rem, 100%);
+  max-width: min(8rem, 100%);
+  overflow: hidden;
 }
 
 .thumbnail {
@@ -70,8 +72,10 @@
 }
 
 .name {
-  max-width: 13rem;
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--accent);
 }

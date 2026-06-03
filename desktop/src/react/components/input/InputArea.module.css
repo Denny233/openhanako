@@ -840,7 +840,7 @@
 .file-mention-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     width: 100%;
     min-width: 0;
     padding: 7px 9px;
@@ -865,14 +865,20 @@
     justify-content: center;
     flex-shrink: 0;
     color: var(--text-muted);
-    width: 22px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
+}
+
+.file-mention-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
 }
 
 .file-mention-thumbnail {
-    width: 22px;
-    height: 22px;
-    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
     object-fit: cover;
     background: rgba(var(--accent-rgb), 0.08);
     box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.08);
@@ -881,6 +887,7 @@
 .file-mention-main {
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto;
     min-width: 0;
     gap: 1px;
 }

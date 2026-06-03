@@ -244,6 +244,36 @@ describe('RightWorkspacePanel', () => {
     expect(screen.getByText('可用')).toBeInTheDocument();
   });
 
+  it('uses file-kind icons for audio session files', () => {
+    resetStore([
+      {
+        type: 'message',
+        data: {
+          id: 'a1',
+          role: 'assistant',
+          timestamp: 1700000000000,
+          blocks: [
+            {
+              type: 'file',
+              fileId: 'sf_audio',
+              filePath: '/tmp/session-files/recording.wav',
+              label: 'recording.wav',
+              ext: 'wav',
+              status: 'available',
+            },
+          ],
+        },
+      },
+    ]);
+
+    const { container } = render(<RightWorkspacePanel />);
+
+    fireEvent.click(screen.getByRole('tab', { name: '对话文件' }));
+
+    expect(screen.getByText('recording.wav')).toBeInTheDocument();
+    expect(container.querySelector('svg[data-file-kind="audio"]')).not.toBeNull();
+  });
+
   it('wires session file actions to preview, open, reveal and copy path consumers', () => {
     resetStore([
       {
