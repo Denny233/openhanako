@@ -3,7 +3,7 @@ import {
   buildCoverStyleGuideForAgent,
 } from "../lib/cover-style-guide.js";
 import { isBeautifyEnabledForAgentConfig } from "../lib/availability.js";
-import { t } from "../../../server/i18n.js";
+import { t } from "../../../lib/i18n.js";
 
 export const name = "get-cover-style-guide";
 export const description = t("toolDef.getCoverStyleGuide.description");

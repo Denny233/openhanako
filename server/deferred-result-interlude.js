@@ -1,4 +1,4 @@
-import { t } from "./i18n.js";
+import { t } from "../lib/i18n.js";
 
 const MAX_DETAIL_CHARS = 6000;
 const MAX_LABEL_CHARS = 80;

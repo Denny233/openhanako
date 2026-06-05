@@ -5,7 +5,7 @@ import {
   normalizeImageInput,
   saveBase64Images,
 } from "./common.js";
-import { t } from "../../../server/i18n.js";
+import { t } from "../../../lib/i18n.js";
 
 const DEFAULT_BASE_URL = "https://dashscope.aliyuncs.com/api/v1";
 

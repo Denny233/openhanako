@@ -8,7 +8,7 @@
  */
 
 import path from "path";
-import { t } from "./i18n.js";
+import { t } from "../lib/i18n.js";
 import { materializeExecutorIdentity } from "../lib/subagent-executor-metadata.js";
 
 export const BLOCK_EXTRACTORS = {

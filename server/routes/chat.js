@@ -10,7 +10,7 @@ import { extractBlocks } from "../block-extractors.js";
 import { toAppEventWsMessage } from "../app-events.js";
 import { wsSend, wsParse, wsSendSerialized } from "../ws-protocol.js";
 import { debugLog, createModuleLogger } from "../../lib/debug-log.js";
-import { t } from "../i18n.js";
+import { t } from "../../lib/i18n.js";
 import { getLastAssistantUsage } from "../../lib/pi-sdk/index.js";
 import { compactSessionWithCachePreservation, isStaleExtensionContextError } from "../../core/session-compactor.js";
 import { logLlmUsage } from "../../lib/llm/usage-observer.js";
