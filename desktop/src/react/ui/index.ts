@@ -2,7 +2,7 @@ export { Overlay } from './Overlay';
 export { Button } from './Button';
 export { Toggle } from './Toggle';
 export type { ToggleProps } from './Toggle';
-export { SelectWidget } from './SelectWidget';
+export { SelectWidget, selectWidgetStyles } from './SelectWidget';
 export type { SelectOption } from './SelectWidget';
 export { AnchoredPortal } from './AnchoredPortal';
 export type { AnchoredPortalAlign } from './AnchoredPortal';

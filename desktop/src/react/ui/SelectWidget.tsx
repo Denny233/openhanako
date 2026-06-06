@@ -7,7 +7,10 @@ export interface SelectOption {
   label: string;
   disabled?: boolean;
   group?: string;
+  description?: string;
 }
+
+export { styles as selectWidgetStyles };
 
 interface SelectWidgetProps {
   options: SelectOption[];
@@ -20,6 +23,10 @@ interface SelectWidgetProps {
   popupClassName?: string;
   renderTrigger?: (option: SelectOption | undefined, isOpen: boolean) => React.ReactNode;
   renderOption?: (option: SelectOption, isSelected: boolean) => React.ReactNode;
+  /** 'comfortable' gives 1.2x row height for avatar-containing options */
+  density?: 'compact' | 'comfortable';
+  /** Popup horizontal alignment relative to trigger */
+  align?: 'start' | 'end';
 }
 
 export function SelectWidget({
@@ -33,11 +40,14 @@ export function SelectWidget({
   popupClassName,
   renderTrigger,
   renderOption,
+  density = 'compact',
+  align = 'end',
 }: SelectWidgetProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [panelStyle, setPanelStyle] = useState<React.CSSProperties>({});
+  const [openDirection, setOpenDirection] = useState<'up' | 'down'>('down');
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -47,17 +57,20 @@ export function SelectWidget({
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
     const openAbove = spaceBelow < 200 && spaceAbove > spaceBelow;
+    setOpenDirection(openAbove ? 'up' : 'down');
 
     setPanelStyle({
       position: 'fixed',
-      right: window.innerWidth - rect.right,
+      ...(align === 'start'
+        ? { left: rect.left }
+        : { right: window.innerWidth - rect.right }),
       minWidth: rect.width,
       ...(openAbove
         ? { bottom: window.innerHeight - rect.top + 2 }
         : { top: rect.bottom + 2 }),
       zIndex: 9999,
     });
-  }, [open]);
+  }, [open, align]);
 
   useEffect(() => {
     if (!open) return;
@@ -126,7 +139,12 @@ export function SelectWidget({
           close();
         }}
       >
-        {renderOption ? renderOption(item, selected) : item.label}
+        {renderOption ? renderOption(item, selected) : (
+          <>
+            <span>{item.label}</span>
+            {item.description && <span className={styles.optionDesc}>{item.description}</span>}
+          </>
+        )}
       </button>
     );
   };
@@ -156,10 +174,12 @@ export function SelectWidget({
       </button>
       {open && createPortal(
         <div
-          className={[styles.popup, popupClassName].filter(Boolean).join(' ')}
+          className={[styles.popup, density === 'comfortable' && styles.comfortable, popupClassName].filter(Boolean).join(' ')}
           ref={panelRef}
           style={panelStyle}
           data-select-widget-popup
+          data-direction={openDirection}
+          data-align={align}
           role="listbox"
         >
           {renderItems()}
