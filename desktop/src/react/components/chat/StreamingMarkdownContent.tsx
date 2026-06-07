@@ -1,10 +1,8 @@
 import { memo, useLayoutEffect, useMemo, useRef } from 'react';
-import { useTypewriterText } from '../../hooks/use-typewriter-text';
 import { splitGraphemes } from '../../utils/grapheme';
-import { renderMarkdown } from '../../utils/markdown';
 import type { LinkOpenContext } from '../../utils/link-open';
-import { useI18n } from '../../hooks/use-i18n';
 import { MarkdownContent } from './MarkdownContent';
+import styles from './Chat.module.css';
 
 interface Props {
   html: string;
@@ -23,7 +21,10 @@ const COMPLEX_MARKDOWN_PATTERNS = [
   /(^|\n)\s*<[^>\n]+>/,
 ];
 const BACKTICK_SENSITIVE_MARKDOWN = /`/;
-const MAX_TAIL_FADE_COUNT = 6;
+function cx(...parts: Array<string | false | null | undefined>): string | undefined {
+  const value = parts.filter(Boolean).join(' ');
+  return value || undefined;
+}
 
 export function isTypewriterEligibleMarkdownSource(source: string): boolean {
   if (!source.trim()) return false;
@@ -36,7 +37,7 @@ function countNewTailGraphemes(previous: string | null, current: string): number
   const newText = previous && current.startsWith(previous)
     ? current.slice(previous.length)
     : current;
-  return Math.min(MAX_TAIL_FADE_COUNT, splitGraphemes(newText).length);
+  return splitGraphemes(newText).length;
 }
 
 export const StreamingMarkdownContent = memo(function StreamingMarkdownContent({
@@ -46,36 +47,27 @@ export const StreamingMarkdownContent = memo(function StreamingMarkdownContent({
   className,
   linkContext,
 }: Props) {
-  const { locale } = useI18n();
-  const shouldType = !!source && active && isTypewriterEligibleMarkdownSource(source);
+  const shouldAnimateStream = !!source && active;
+  const shouldAnimateTail = shouldAnimateStream && isTypewriterEligibleMarkdownSource(source);
+  const shouldAnimateBlock = shouldAnimateStream && !shouldAnimateTail;
   const previousVisibleSourceRef = useRef<string | null>(null);
-  const visibleSource = useTypewriterText(source || '', {
-    active: shouldType,
-    displayFps: 24,
-    minBatch: 1,
-    maxBatch: 24,
-    catchUpThreshold: 24,
-    locale,
-  });
-  const visibleHtml = useMemo(
-    () => shouldType ? renderMarkdown(visibleSource) : html,
-    [html, shouldType, visibleSource],
-  );
   const tailFadeCount = useMemo(
-    () => shouldType
-      ? countNewTailGraphemes(previousVisibleSourceRef.current, visibleSource)
+    () => shouldAnimateTail
+      ? countNewTailGraphemes(previousVisibleSourceRef.current, source || '')
       : 0,
-    [shouldType, source, visibleSource],
+    [shouldAnimateTail, source],
   );
+  const blockMotionKey = shouldAnimateBlock ? `stream-block-${source.length}:${html.length}` : undefined;
 
   useLayoutEffect(() => {
-    previousVisibleSourceRef.current = shouldType ? visibleSource : null;
-  }, [shouldType, visibleSource]);
+    previousVisibleSourceRef.current = shouldAnimateStream ? (source || null) : null;
+  }, [shouldAnimateStream, source]);
 
   return (
     <MarkdownContent
-      html={visibleHtml}
-      className={className}
+      key={blockMotionKey}
+      html={html}
+      className={cx(className, shouldAnimateBlock && styles.streamMarkdownBlockEnter)}
       tailFadeCount={tailFadeCount}
       linkContext={linkContext}
     />

@@ -22,7 +22,7 @@ import { bumpMessageLiveVersion } from '../stores/message-live-version';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- 流式消息 handle(msg) 接收动态 JSON */
 
-const FLUSH_INTERVAL = 200;
+const FLUSH_INTERVAL = 100;
 let streamMessageSeq = 0;
 type InterludeContentBlock = Extract<ContentBlock, { type: 'interlude' }>;
 

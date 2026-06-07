@@ -13,6 +13,7 @@
   box-shadow: var(--panel-card-shadow);
   color: var(--text);
   font-size: 0.82rem;
+  animation: hana-chat-soft-up-in 130ms var(--ease-out) both;
   transition:
     background var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out);
@@ -170,5 +171,11 @@ button.main:focus-visible {
 @media (max-width: 720px) {
   .card {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
   }
 }

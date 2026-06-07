@@ -3,36 +3,17 @@
 import React from 'react';
 import fs from 'node:fs';
 import path from 'node:path';
-import { act, cleanup, render } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   StreamingMarkdownContent,
   isTypewriterEligibleMarkdownSource,
 } from '../../components/chat/StreamingMarkdownContent';
-import { splitGraphemes } from '../../utils/grapheme';
-
-let rafCallbacks: FrameRequestCallback[] = [];
-
-function installRaf() {
-  rafCallbacks = [];
-  vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
-    rafCallbacks.push(cb);
-    return rafCallbacks.length;
-  });
-  vi.spyOn(window, 'cancelAnimationFrame').mockImplementation((id: number) => {
-    rafCallbacks[id - 1] = () => {};
-  });
-}
-
-function flushRaf(frameTime: number) {
-  const callbacks = rafCallbacks;
-  rafCallbacks = [];
-  callbacks.forEach((cb) => cb(frameTime));
-}
 
 describe('StreamingMarkdownContent', () => {
   beforeEach(() => {
-    installRaf();
+    vi.spyOn(window, 'requestAnimationFrame');
+    vi.spyOn(window, 'cancelAnimationFrame');
     window.matchMedia = vi.fn().mockReturnValue({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }) as unknown as typeof window.matchMedia;
   });
 
@@ -41,50 +22,47 @@ describe('StreamingMarkdownContent', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders streaming prose progressively and marks the newly visible tail for fade', () => {
+  it('renders each streaming prose flush immediately and marks the new tail chunk for fade', () => {
     const { container, rerender } = render(
       <StreamingMarkdownContent source="旧正文" html="<p>旧正文</p>" active />,
     );
+
+    expect(container.textContent?.trim()).toBe('旧正文');
 
     rerender(
       <StreamingMarkdownContent source="旧正文新正文继续出现" html="<p>旧正文新正文继续出现</p>" active />,
     );
 
-    act(() => {
-      flushRaf(0);
-    });
-
-    const text = container.textContent || '';
-    const newlyVisible = text.slice('旧正文'.length);
-    expect(text.length).toBeGreaterThan('旧正文'.length);
-    expect(text.length).toBeLessThan('旧正文新正文继续出现'.length);
-    const tailCount = container.querySelectorAll('[data-stream-tail-char="true"]').length;
-    expect(tailCount).toBeGreaterThan(0);
-    expect(tailCount).toBeLessThanOrEqual(Math.min(6, splitGraphemes(newlyVisible).length));
+    const text = container.textContent?.trim() || '';
+    expect(text).toBe('旧正文新正文继续出现');
+    expect(container.querySelector('[data-stream-tail-chunk="true"]')?.textContent).toBe('新正文继续出现');
+    expect(window.requestAnimationFrame).not.toHaveBeenCalled();
   });
 
-  it('does not replay the tail fade when the stream target advances before visible text does', () => {
+  it('does not replay the tail fade when the streaming prose target has not changed', () => {
     const source = '这是一段足够长的普通正文';
     const { container, rerender } = render(
       <StreamingMarkdownContent source={source} html={`<p>${source}</p>`} active />,
     );
 
-    expect(container.querySelectorAll('[data-stream-tail-char="true"]').length).toBe(6);
+    const firstTail = container.querySelector('[data-stream-tail-chunk="true"]');
+    expect(firstTail?.textContent).toBe(source);
 
     rerender(
-      <StreamingMarkdownContent source={`${source}追加`} html={`<p>${source}追加</p>`} active />,
+      <StreamingMarkdownContent source={source} html={`<p>${source}</p>`} active />,
     );
 
     expect(container.textContent?.trim()).toBe(source);
-    expect(container.querySelector('[data-stream-tail-char="true"]')).toBeNull();
+    expect(container.querySelector('[data-stream-tail-chunk="true"]')).toBe(firstTail);
   });
 
-  it('marks six visible tail graphemes for fade when prose is long enough', () => {
+  it('marks the full newly rendered prose chunk for fade when prose is long enough', () => {
+    const source = '这是一段足够长的普通正文';
     const { container } = render(
-      <StreamingMarkdownContent source="这是一段足够长的普通正文" html="<p>这是一段足够长的普通正文</p>" active />,
+      <StreamingMarkdownContent source={source} html={`<p>${source}</p>`} active />,
     );
 
-    expect(container.querySelectorAll('[data-stream-tail-char="true"]').length).toBe(6);
+    expect(container.querySelector('[data-stream-tail-chunk="true"]')?.textContent).toBe(source);
   });
 
   it('does not typewriter complex markdown blocks', () => {
@@ -96,7 +74,8 @@ describe('StreamingMarkdownContent', () => {
     );
 
     expect(container.textContent).toContain('const x = 1;');
-    expect(container.querySelector('[data-stream-tail-char="true"]')).toBeNull();
+    expect(container.querySelector('[data-stream-tail-chunk="true"]')).toBeNull();
+    expect(container.querySelector('[class*="streamMarkdownBlockEnter"]')).not.toBeNull();
   });
 
   it('does not typewriter backtick-sensitive inline markdown while streaming', () => {
@@ -110,22 +89,32 @@ describe('StreamingMarkdownContent', () => {
     );
 
     expect(container.textContent).toContain('后续文字也要稳定显示。');
-    expect(container.querySelector('[data-stream-tail-char="true"]')).toBeNull();
+    expect(container.querySelector('[data-stream-tail-chunk="true"]')).toBeNull();
+    expect(container.querySelector('[class*="streamMarkdownBlockEnter"]')).not.toBeNull();
   });
 
-  it('keeps tail fade characters on the text baseline without transform offsets', () => {
+  it('keeps stream motion off React animation frames and limits CSS to opacity or tiny transforms', () => {
     const css = fs.readFileSync(
       path.join(process.cwd(), 'desktop/src/react/components/chat/Chat.module.css'),
       'utf8',
     );
-    const fadeBlock = css.match(/\.streamTailChar\s*\{(?<body>[^}]*)\}/)?.groups?.body || '';
-    const fadeKeyframes = css.slice(
-      css.indexOf('@keyframes stream-tail-fade'),
-      css.indexOf('@media (prefers-reduced-motion: reduce)'),
+    const animations = fs.readFileSync(
+      path.join(process.cwd(), 'desktop/src/animations.css'),
+      'utf8',
     );
+    const tailBlock = css.match(/\.streamTailChunk\s*\{(?<body>[^}]*)\}/)?.groups?.body || '';
+    const cardBlock = css.match(/\.mediaGenerationCard\s*\{(?<body>[^}]*)\}/)?.groups?.body || '';
+    const toolBlock = Array.from(css.matchAll(/\.toolGroup::before\s*\{(?<body>[^}]*)\}/g))
+      .map(match => match.groups?.body || '')
+      .find(body => body.includes('hana-tool-bar-in')) || '';
 
-    expect(css).toContain('stream-tail-fade');
-    expect(fadeBlock).not.toMatch(/inline-block/);
-    expect(fadeKeyframes).not.toMatch(/translateY/);
+    expect(tailBlock).toContain('hana-stream-tail-in');
+    expect(tailBlock).not.toContain('requestAnimationFrame');
+    expect(cardBlock).toContain('hana-chat-soft-up-in');
+    expect(toolBlock).toContain('hana-tool-bar-in');
+    expect(animations).toContain('@keyframes hana-stream-tail-in');
+    expect(animations).toContain('@keyframes hana-chat-soft-down-in');
+    expect(animations).toContain('@keyframes hana-chat-soft-up-in');
+    expect(animations).toContain('@keyframes hana-tool-bar-in');
   });
 });

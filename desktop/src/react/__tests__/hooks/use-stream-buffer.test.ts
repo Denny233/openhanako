@@ -113,7 +113,7 @@ describe('streamBufferManager.thinking 流式刷新', () => {
       const beforeFlush = getThinkingBlock();
       expect(beforeFlush).toEqual({ type: 'thinking', content: '', sealed: false });
 
-      vi.advanceTimersByTime(199);
+      vi.advanceTimersByTime(99);
       expect(getThinkingBlock()).toEqual({ type: 'thinking', content: '', sealed: false });
 
       vi.advanceTimersByTime(1);
