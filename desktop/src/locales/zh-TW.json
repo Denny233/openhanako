@@ -2351,6 +2351,7 @@
     "settingsTimeout": "「{label}」修改確認逾時，設定未變更",
     "subagentMaxConcurrent": "目前已有 {max} 個子 agent 在執行，請等待完成後再發起。",
     "subagentParentSessionRequired": "subagent 需要活躍父會話和背景任務儲存，無法在目前上下文建立可繼續實例。",
+    "subagentWriteAccessDenied": "無法授予寫入權限：父會話處於唯讀模式，子代理權限不能超過父會話。請把會話切換到可操作模式後重試，或改用 access:\"read\" 重新派單。",
     "subagentFailed": "子 agent 執行失敗: {msg}",
     "subagentTimeout": "子 agent 執行逾時（{minutes} 分鐘）",
     "subagentAborted": "子 agent 已被終止",

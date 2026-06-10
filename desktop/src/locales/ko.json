@@ -2359,6 +2359,7 @@
     "settingsTimeout": "\"{label}\" 변경 확인 시간이 초과되었어요. 설정이 변경되지 않았어요",
     "subagentMaxConcurrent": "현재 {max}개의 서브 에이전트가 실행 중이에요. 완료될 때까지 기다려 주세요.",
     "subagentParentSessionRequired": "subagent에는 활성 부모 대화와 백그라운드 작업 저장소가 필요해요. 현재 컨텍스트에서는 계속 가능한 인스턴스를 만들 수 없어요.",
+    "subagentWriteAccessDenied": "쓰기 권한을 부여할 수 없어요: 부모 세션이 읽기 전용 모드라서 서브에이전트 권한은 부모를 초과할 수 없어요. 세션을 조작 가능 모드로 전환한 뒤 다시 시도하거나, access:\"read\"로 다시 디스패치해 주세요.",
     "subagentFailed": "서브 에이전트 실행 실패: {msg}",
     "subagentTimeout": "서브 에이전트 실행 시간 초과 ({minutes}분)",
     "subagentAborted": "서브 에이전트가 중단되었어요",

@@ -2359,6 +2359,7 @@
     "settingsTimeout": "「{label}」の変更確認がタイムアウトしました。設定は変更されていません",
     "subagentMaxConcurrent": "現在 {max} 個のサブエージェントが実行中です。完了をお待ちください。",
     "subagentParentSessionRequired": "subagent にはアクティブな親会話とバックグラウンドタスクストアが必要です。このコンテキストでは継続可能なインスタンスを作成できません。",
+    "subagentWriteAccessDenied": "書き込み権限を付与できません：親セッションが読み取り専用モードのため、サブエージェントの権限は親を超えられません。セッションを操作可能モードに切り替えて再試行するか、access:\"read\" で再ディスパッチしてください。",
     "subagentFailed": "サブエージェントの実行に失敗しました: {msg}",
     "subagentTimeout": "サブエージェントがタイムアウトしました（{minutes}分）",
     "subagentAborted": "サブエージェントが中止されました",

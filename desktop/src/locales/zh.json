@@ -2564,6 +2564,7 @@
     "settingsTimeout": "「{label}」修改确认超时，设置未变更",
     "subagentMaxConcurrent": "当前已有 {max} 个子 agent 在运行，请等待完成后再发起。",
     "subagentParentSessionRequired": "subagent 需要活跃父会话和后台任务存储，无法在当前上下文创建可继续实例。",
+    "subagentWriteAccessDenied": "无法授予写权限：父会话处于只读模式，子代理权限不能超过父会话。请把会话切换到可操作模式后重试，或改用 access:\"read\" 重新派单。",
     "subagentFailed": "子 agent 执行失败: {msg}",
     "subagentTimeout": "子 agent 执行超时（{minutes} 分钟）",
     "subagentAborted": "子 agent 已被终止",

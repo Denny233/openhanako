@@ -2564,6 +2564,7 @@
     "settingsTimeout": "\"{label}\" change confirmation timed out, no changes made",
     "subagentMaxConcurrent": "{max} sub-agents are already running, please wait before starting new ones.",
     "subagentParentSessionRequired": "subagent requires an active parent session and deferred task store; cannot create a continuable instance in this context.",
+    "subagentWriteAccessDenied": "Cannot grant write access: the parent session is in read-only mode, and a subagent's permission may not exceed its parent. Switch the session to an operable mode and retry, or re-dispatch with access:\"read\".",
     "subagentFailed": "Sub-agent execution failed: {msg}",
     "subagentTimeout": "Sub-agent timed out after {minutes} minutes",
     "subagentAborted": "Sub-agent was aborted",
